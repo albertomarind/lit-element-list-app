@@ -152,11 +152,11 @@ class LitCard extends LitElement {
         bottom: 0;
         left: 0;
         background-color: white;
-        display: none;
+        display:none;
       }
 
-      .card__friends-section.show {
-        display: block;
+      .card__friends-section.show{
+        display:block;
       }
 
       .card__location-section {
@@ -166,10 +166,6 @@ class LitCard extends LitElement {
         bottom: 0;
         left: 0;
         background-color: white;
-        display: none;
-      }
-
-      .card__location-section.show {
         display: block;
       }
 
@@ -337,14 +333,18 @@ class LitCard extends LitElement {
     )}
           </ul>
         </div>
-        <div class="card__location-section ${this.showLocation ? " show" : ""}">
+        ${this.showLocation ? html`
+        <div class="card__location-section">
           <span class="card__location-btn-close" @click="${this.toggleLocation}"
             >x</span
           >
-          <div class="card__location-map" id="map"></div>
+              <lit-map .latitude="${this.latitude}" .longitude=${this.longitude}></lit-map>
         </div>
+        
+        `: html``}
+        
       </div>
-      ${this.showLocation ? html`${this.script()}` : html``}
+  
     `;
   }
 
@@ -373,34 +373,6 @@ class LitCard extends LitElement {
 
   toggleLocation() {
     this.showLocation = !this.showLocation;
-    if(this.map === null){
-      this.loadLocation();
-    }else{
-      this.map.remove();
-      this.map = null;
-    }
-   
-  }
-
-  loadLocation() {
-    setTimeout(() => {
-      let refHtmlMap = this.shadowRoot.getElementById("map");
-      this.map = L.map(refHtmlMap).setView([this.latitude, this.longitude], 13);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(this.map);
-      L.marker([this.latitude, this.longitude]).addTo(this.map);
-    }, 100);
-  }
-
-  script() {
-    let script = document.createElement("script");
-    script.src = "https://unpkg.com/leaflet@1.7.1/dist/leaflet.js";
-    script.integrity =
-      "sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==";
-    script.crossOrigin = "";
-    return script;
   }
 
 }
