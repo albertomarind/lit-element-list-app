@@ -35,6 +35,9 @@ class LitCard extends LitElement {
       longitude: {
         type: Number,
       },
+      map: {
+        type: Object
+      }
     };
   }
 
@@ -272,7 +275,8 @@ class LitCard extends LitElement {
   constructor() {
     super();
     this.showFriends = false;
-    this.showLocatio = false;
+    this.showLocation = false;
+    this.map = null;
   }
 
   render() {
@@ -369,18 +373,24 @@ class LitCard extends LitElement {
 
   toggleLocation() {
     this.showLocation = !this.showLocation;
-    this.loadLocation();
+    if(this.map === null){
+      this.loadLocation();
+    }else{
+      this.map.remove();
+      this.map = null;
+    }
+   
   }
 
   loadLocation() {
     setTimeout(() => {
       let refHtmlMap = this.shadowRoot.getElementById("map");
-      let map = L.map(refHtmlMap).setView([this.latitude, this.longitude], 13);
+      this.map = L.map(refHtmlMap).setView([this.latitude, this.longitude], 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(map);
-      L.marker([this.latitude, this.longitude]).addTo(map);
+      }).addTo(this.map);
+      L.marker([this.latitude, this.longitude]).addTo(this.map);
     }, 100);
   }
 
@@ -392,8 +402,6 @@ class LitCard extends LitElement {
     script.crossOrigin = "";
     return script;
   }
-  onLoad() {
 
-  }
 }
 customElements.define("lit-card", LitCard);
